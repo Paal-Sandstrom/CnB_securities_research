@@ -6,272 +6,65 @@
     <title>Silkroad Equity Analysis</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
-
-    <style>
-        :root {
-            --bg:       #09090b;
-            --bg2:      #111113;
-            --gold:     #c8a96e;
-            --gold-dim: #8a7148;
-            --ivory:    #ede8df;
-            --muted:    #6b6459;
-            --border:   rgba(200, 169, 110, 0.14);
-            --border-b: rgba(200, 169, 110, 0.28);
-        }
-
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-        html, body {
-            height: 100%;
-            background: var(--bg);
-            color: var(--ivory);
-            font-family: 'Jost', sans-serif;
-            overflow: hidden;
-        }
-
-        /* ── SUBTLE GRID TEXTURE ── */
-        body::before {
-            content: '';
-            position: fixed; inset: 0; z-index: 0;
-            background-image:
-                linear-gradient(rgba(200,169,110,0.025) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(200,169,110,0.025) 1px, transparent 1px);
-            background-size: 60px 60px;
-            pointer-events: none;
-        }
-
-        /* ── RADIAL VIGNETTE ── */
-        body::after {
-            content: '';
-            position: fixed; inset: 0; z-index: 0;
-            background: radial-gradient(ellipse 80% 70% at 50% 40%, transparent 40%, rgba(9,9,11,0.85) 100%);
-            pointer-events: none;
-        }
-
-        .shell {
-            position: relative; z-index: 10;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            max-width: 1100px;
-            margin: 0 auto;
-            padding: 0 32px;
-        }
-        .main-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            gap: 32px;
-        }
-
-
-
-        /* ── HERO ── */
-        .hero {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: flex-start;
-            padding: 28px 0 20px;
-        }
-
-        .wordmark {
-            font-family: 'Cormorant Garamond', serif;
-            font-weight: 300;
-            font-size: clamp(3.2rem, 7vw, 5.8rem);
-            line-height: 0.94;
-            letter-spacing: -0.01em;
-            color: var(--ivory);
-            margin-bottom: 18px;
-        }
-        .wordmark em {
-            font-style: italic;
-            color: var(--gold);
-        }
-        .tagline {
-            font-family: 'Cormorant Garamond', serif;
-            font-style: italic;
-            font-weight: 300;
-            font-size: 1.15rem;
-            color: var(--muted);
-            letter-spacing: 0.03em;
-            max-width: 520px;
-            line-height: 1.5;
-        }
-
-        /* ── RESEARCH CARDS ── */
-        .cards-section {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 16px;
-            align-items: stretch;
-            padding: 0 0 12px;
-        }
-
-        .card {
-            border: 1px solid var(--border);
-            border-radius: 3px;
-            padding: 22px 24px 20px;
-            background: rgba(255,255,255,0.018);
-            position: relative;
-            overflow: hidden;
-            transition: border-color 0.35s, background 0.35s;
-            cursor: default;
-            display: flex;
-            flex-direction: column;
-        }
-        .card p { flex: 1; }
-        .card::before {
-            content: '';
-            position: absolute; top: 0; left: 0;
-            width: 100%; height: 2px;
-            background: linear-gradient(90deg, var(--gold) 0%, transparent 100%);
-            opacity: 0;
-            transition: opacity 0.35s;
-        }
-        .card:hover { border-color: var(--border-b); background: rgba(200,169,110,0.04); }
-        .card:hover::before { opacity: 1; }
-
-        .card-num {
-            font-family: 'DM Mono', monospace;
-            font-size: 0.6rem;
-            letter-spacing: 0.18em;
-            color: var(--gold-dim);
-            text-transform: uppercase;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .card-num::after {
-            content: '';
-            flex: 1;
-            height: 1px;
-            background: var(--border);
-        }
-        .card h3 {
-            font-family: 'Cormorant Garamond', serif;
-            font-weight: 400;
-            font-size: 1.45rem;
-            letter-spacing: 0.01em;
-            color: var(--ivory);
-            margin-bottom: 10px;
-            line-height: 1.15;
-        }
-        .card p {
-            font-size: 0.8rem;
-            font-weight: 300;
-            color: var(--muted);
-            line-height: 1.65;
-            letter-spacing: 0.02em;
-        }
-        .card-footer {
-            margin-top: 16px;
-            font-family: 'DM Mono', monospace;
-            font-size: 0.62rem;
-            letter-spacing: 0.14em;
-            text-transform: uppercase;
-            color: var(--gold-dim);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            transition: color 0.3s;
-        }
-        .card:hover .card-footer { color: var(--gold); }
-        .card-footer::after { content: '→'; }
-
-
-
-        /* ── BOTTOM BAR ── */
-        .bottombar {
-            border-top: 1px solid var(--border);
-            padding: 16px 0;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 20px;
-        }
-        .contact-info {
-            font-family: 'DM Mono', monospace;
-            font-size: 0.68rem;
-            letter-spacing: 0.1em;
-            color: var(--muted);
-            display: flex;
-            gap: 36px;
-        }
-        .contact-info span { display: flex; align-items: center; gap: 8px; }
-        .contact-label {
-            color: var(--gold-dim);
-            text-transform: uppercase;
-            font-size: 0.6rem;
-            letter-spacing: 0.18em;
-        }
-
-        /* ── ENTRANCE ANIMATIONS ── */
-        .hero { animation: fadeUp 0.7s 0.15s ease both; }
-        .cards-section { animation: fadeUp 0.7s 0.3s ease both; }
-        .bottombar { animation: fadeUp 0.7s 0.42s ease both; }
-        @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(14px); }
-            to   { opacity: 1; transform: translateY(0); }
-        }
-
-        /* ── RESPONSIVE ── */
-        @media (max-width: 760px) {
-            html, body { overflow-y: auto; }
-            .shell { height: auto; padding: 0 18px; }
-            .main-content { padding: 40px 0 24px; }
-            .cards-section { grid-template-columns: 1fr; }
-            .wordmark { font-size: 3rem; }
-            .contact-info { flex-direction: column; gap: 10px; }
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div class="shell">
 
+<header class="topbar">
+    <a href="index.html" class="logo">Silkroad</a>
+    <button class="burger-btn" id="burger-btn" aria-label="Toggle Menu">
+        <span></span><span></span><span></span>
+    </button>
+</header>
+
+<nav class="nav-overlay" id="nav-overlay">
+    <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="stock-report.html">Stock Reports</a></li>
+        <li><a href="ma-analysis.html">M&A Analysis</a></li>
+        <li><a href="bond-coverage.html">Bond Coverage</a></li>
+        <li><a href="about-us.html">About Us</a></li>
+        <li><a href="blog.html">Blog</a></li>
+    </ul>
+</nav>
+
+<div class="shell">
     <div class="main-content">
         <section class="hero">
             <h1 class="wordmark">Silkroad<br><em>Equity Analysis</em></h1>
             <p class="tagline">Fundamental analysis and valuation of global equities — written with discipline, published with conviction.</p>
         </section>
 
-        <!-- RESEARCH CARDS -->
         <div class="cards-section">
-            <a href="stocks/nichirei.html" class="card" style="text-decoration:none">
+            <a href="stock-report.html" class="card">
                 <div class="card-num">01 &nbsp;Coverage</div>
                 <h3>Stock<br>Reports</h3>
                 <p>Long-form fundamental analysis across global equities. DCF models, segment breakdowns, and conviction-rated conclusions.</p>
                 <div class="card-footer">Read reports</div>
             </a>
-            <a href="#" class="card" style="text-decoration:none">
+            <a href="ma-analysis.html" class="card">
                 <div class="card-num">02 &nbsp;Transactions</div>
                 <h3>M&amp;A<br>Analysis</h3>
                 <p>Deal rationale, synergy assumptions, and accretion/dilution studies on notable merger and acquisition activity.</p>
-                <div class="card-footer">Coming soon</div>
+                <div class="card-footer">Read analysis</div>
             </a>
-            <a href="#" class="card" style="text-decoration:none">
+            <a href="bond-coverage.html" class="card">
                 <div class="card-num">03 &nbsp;Fixed Income</div>
                 <h3>Bond<br>Coverage</h3>
                 <p>Credit quality assessments, yield curve analysis, and duration risk across sovereign and corporate bond markets.</p>
-                <div class="card-footer">Coming soon</div>
+                <div class="card-footer">Read coverage</div>
             </a>
         </div>
     </div>
 
-    <!-- BOTTOM BAR -->
     <footer class="bottombar">
         <div class="contact-info">
             <span><span class="contact-label">Address</span> Magistratsvägen 55B, 222 33, Lund, Sweden</span>
             <span><span class="contact-label">Phone</span> +46 72 233 26 22 | +46 76 921 83 51 </span>
         </div>
     </footer>
-
 </div>
 
-<script>
-</script>
+<script src="menu.js"></script>
 </body>
 </html>
