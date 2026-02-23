@@ -3,283 +3,275 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CnB Equity Research</title>
+    <title>Silkroad Equity Analysis</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&display=swap');
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
+        :root {
+            --bg:       #09090b;
+            --bg2:      #111113;
+            --gold:     #c8a96e;
+            --gold-dim: #8a7148;
+            --ivory:    #ede8df;
+            --muted:    #6b6459;
+            --border:   rgba(200, 169, 110, 0.14);
+            --border-b: rgba(200, 169, 110, 0.28);
         }
 
-        body {
-            font-family: 'Space Grotesk', sans-serif;
-            background-color: #010409;
-            color: #e2e8f0;
-            height: 100vh;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: space-between;
-            padding: 80px 20px;
-        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        /* --- AMBIENT CANVAS BACKGROUND --- */
-        #particleCanvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
+        html, body {
             height: 100%;
-            z-index: 0;
-            pointer-events: none; /* Ignores the mouse entirely */
-        }
-
-        /* --- Z-INDEX WRAPPER FOR CONTENT --- */
-        .ui-layer {
-            position: relative;
-            z-index: 10;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 100%;
-            height: 100%;
-            justify-content: space-between;
-        }
-
-        /* --- GLOWING TITLE --- */
-        .title-container {
-            text-align: center;
-        }
-
-        h1 {
-            font-size: 4rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 6px;
-            color: #ffffff;
-            text-shadow: 
-                0 0 10px rgba(14, 165, 233, 0.5),
-                0 0 20px rgba(14, 165, 233, 0.3);
-            margin-bottom: 5px;
-        }
-
-        h1 span {
-            color: #0ea5e9;
-        }
-
-        .subtitle {
-            font-size: 1.1rem;
-            color: #94a3b8;
-            letter-spacing: 4px;
-            text-transform: uppercase;
-        }
-
-        /* --- ABOUT US BOX --- */
-        .about-box {
-            background: rgba(14, 165, 233, 0.03);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(14, 165, 233, 0.15);
-            border-radius: 16px;
-            max-width: 650px;
-            padding: 35px 40px;
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            margin: 40px 0;
-        }
-
-        .about-box p {
-            font-size: 1.15rem;
-            line-height: 1.7;
-            color: #cbd5e1;
-            font-weight: 400;
-        }
-
-        .about-box span.highlight {
-            color: #38bdf8;
-            font-weight: 700;
-        }
-
-        /* --- GLASSMORPHISM NAV BUTTONS --- */
-        .nav-grid {
-            display: flex;
-            gap: 30px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        .glass-btn {
-            position: relative;
-            background: rgba(14, 165, 233, 0.04);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(14, 165, 233, 0.2);
-            border-radius: 12px;
-            padding: 18px 45px;
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: #94a3b8;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            text-decoration: none;
+            background: var(--bg);
+            color: var(--ivory);
+            font-family: 'Jost', sans-serif;
             overflow: hidden;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
-            min-width: 200px;
-            text-align: center;
         }
 
-        .glass-btn::before {
+        /* ── SUBTLE GRID TEXTURE ── */
+        body::before {
             content: '';
-            position: absolute;
-            top: 0; left: -100%;
-            width: 50%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(56, 189, 248, 0.3), transparent);
-            transform: skewX(-20deg);
-            transition: all 0.5s ease;
+            position: fixed; inset: 0; z-index: 0;
+            background-image:
+                linear-gradient(rgba(200,169,110,0.025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(200,169,110,0.025) 1px, transparent 1px);
+            background-size: 60px 60px;
+            pointer-events: none;
         }
 
-        .glass-btn:hover {
-            transform: translateY(-5px);
-            background: rgba(14, 165, 233, 0.15);
-            border-color: #38bdf8;
-            color: #ffffff;
-            box-shadow: 
-                0 15px 25px rgba(0, 0, 0, 0.4),
-                0 0 15px rgba(14, 165, 233, 0.3);
-            text-shadow: 0 0 8px #38bdf8;
+        /* ── RADIAL VIGNETTE ── */
+        body::after {
+            content: '';
+            position: fixed; inset: 0; z-index: 0;
+            background: radial-gradient(ellipse 80% 70% at 50% 40%, transparent 40%, rgba(9,9,11,0.85) 100%);
+            pointer-events: none;
         }
 
-        .glass-btn:hover::before {
-            left: 200%;
+        .shell {
+            position: relative; z-index: 10;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 32px;
+        }
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 32px;
         }
 
-        /* MOBILE RESPONSIVE STYLES */
-        @media (max-width: 800px) {
-            h1 { font-size: 2.5rem; letter-spacing: 3px; }
-            .subtitle { font-size: 0.9rem; }
-            .about-box { padding: 25px; margin: 20px 0; }
-            .about-box p { font-size: 1rem; }
-            .nav-grid { flex-direction: column; gap: 15px; width: 100%; max-width: 350px; }
-            .glass-btn { width: 100%; padding: 18px; }
+
+
+        /* ── HERO ── */
+        .hero {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 28px 0 20px;
+        }
+
+        .wordmark {
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 300;
+            font-size: clamp(3.2rem, 7vw, 5.8rem);
+            line-height: 0.94;
+            letter-spacing: -0.01em;
+            color: var(--ivory);
+            margin-bottom: 18px;
+        }
+        .wordmark em {
+            font-style: italic;
+            color: var(--gold);
+        }
+        .tagline {
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            font-weight: 300;
+            font-size: 1.15rem;
+            color: var(--muted);
+            letter-spacing: 0.03em;
+            max-width: 520px;
+            line-height: 1.5;
+        }
+
+        /* ── RESEARCH CARDS ── */
+        .cards-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 16px;
+            align-items: stretch;
+            padding: 0 0 12px;
+        }
+
+        .card {
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            padding: 22px 24px 20px;
+            background: rgba(255,255,255,0.018);
+            position: relative;
+            overflow: hidden;
+            transition: border-color 0.35s, background 0.35s;
+            cursor: default;
+            display: flex;
+            flex-direction: column;
+        }
+        .card p { flex: 1; }
+        .card::before {
+            content: '';
+            position: absolute; top: 0; left: 0;
+            width: 100%; height: 2px;
+            background: linear-gradient(90deg, var(--gold) 0%, transparent 100%);
+            opacity: 0;
+            transition: opacity 0.35s;
+        }
+        .card:hover { border-color: var(--border-b); background: rgba(200,169,110,0.04); }
+        .card:hover::before { opacity: 1; }
+
+        .card-num {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.6rem;
+            letter-spacing: 0.18em;
+            color: var(--gold-dim);
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .card-num::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+        .card h3 {
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 400;
+            font-size: 1.45rem;
+            letter-spacing: 0.01em;
+            color: var(--ivory);
+            margin-bottom: 10px;
+            line-height: 1.15;
+        }
+        .card p {
+            font-size: 0.8rem;
+            font-weight: 300;
+            color: var(--muted);
+            line-height: 1.65;
+            letter-spacing: 0.02em;
+        }
+        .card-footer {
+            margin-top: 16px;
+            font-family: 'DM Mono', monospace;
+            font-size: 0.62rem;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--gold-dim);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: color 0.3s;
+        }
+        .card:hover .card-footer { color: var(--gold); }
+        .card-footer::after { content: '→'; }
+
+
+
+        /* ── BOTTOM BAR ── */
+        .bottombar {
+            border-top: 1px solid var(--border);
+            padding: 16px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+        .contact-info {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.68rem;
+            letter-spacing: 0.1em;
+            color: var(--muted);
+            display: flex;
+            gap: 36px;
+        }
+        .contact-info span { display: flex; align-items: center; gap: 8px; }
+        .contact-label {
+            color: var(--gold-dim);
+            text-transform: uppercase;
+            font-size: 0.6rem;
+            letter-spacing: 0.18em;
+        }
+
+        /* ── ENTRANCE ANIMATIONS ── */
+        .hero { animation: fadeUp 0.7s 0.15s ease both; }
+        .cards-section { animation: fadeUp 0.7s 0.3s ease both; }
+        .bottombar { animation: fadeUp 0.7s 0.42s ease both; }
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(14px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 760px) {
+            html, body { overflow-y: auto; }
+            .shell { height: auto; padding: 0 18px; }
+            .main-content { padding: 40px 0 24px; }
+            .cards-section { grid-template-columns: 1fr; }
+            .wordmark { font-size: 3rem; }
+            .contact-info { flex-direction: column; gap: 10px; }
         }
     </style>
 </head>
 <body>
+<div class="shell">
 
-    <canvas id="particleCanvas"></canvas>
+    <div class="main-content">
+        <section class="hero">
+            <h1 class="wordmark">Silkroad<br><em>Equity Analysis</em></h1>
+            <p class="tagline">Fundamental analysis and valuation of global equities — written with discipline, published with conviction.</p>
+        </section>
 
-    <div class="ui-layer">
-        
-        <div class="title-container">
-            <h1>CnB <span>Research</span></h1>
-            <div class="subtitle">Global Equity Intelligence</div>
+        <!-- RESEARCH CARDS -->
+        <div class="cards-section">
+            <a href="stocks/nichirei.html" class="card" style="text-decoration:none">
+                <div class="card-num">01 &nbsp;Coverage</div>
+                <h3>Stock<br>Reports</h3>
+                <p>Long-form fundamental analysis across global equities. DCF models, segment breakdowns, and conviction-rated conclusions.</p>
+                <div class="card-footer">Read reports</div>
+            </a>
+            <a href="#" class="card" style="text-decoration:none">
+                <div class="card-num">02 &nbsp;Transactions</div>
+                <h3>M&amp;A<br>Analysis</h3>
+                <p>Deal rationale, synergy assumptions, and accretion/dilution studies on notable merger and acquisition activity.</p>
+                <div class="card-footer">Coming soon</div>
+            </a>
+            <a href="#" class="card" style="text-decoration:none">
+                <div class="card-num">03 &nbsp;Fixed Income</div>
+                <h3>Bond<br>Coverage</h3>
+                <p>Credit quality assessments, yield curve analysis, and duration risk across sovereign and corporate bond markets.</p>
+                <div class="card-footer">Coming soon</div>
+            </a>
         </div>
-
-        <div class="about-box">
-            <p>We are two <span class="highlight">Lund University</span> students with a profound interest in finance and global markets. This portal serves as an archive for our independent research, fundamental analysis, and valuation models across various financial equities.</p>
-        </div>
-
-        <div class="nav-grid">
-            <a href="#" class="glass-btn">M & A</a>
-            <a href="stocks/nichirei.html" class="glass-btn">Stock Reports</a>
-            <a href="#" class="glass-btn">Bonds</a>
-        </div>
-
     </div>
 
-    <script>
-        const canvas = document.getElementById('particleCanvas');
-        const ctx = canvas.getContext('2d');
-        
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+    <!-- BOTTOM BAR -->
+    <footer class="bottombar">
+        <div class="contact-info">
+            <span><span class="contact-label">Address</span> Magistratsvägen 55B, 222 33, Lund, Sweden</span>
+            <span><span class="contact-label">Phone</span> +46 72 233 26 22</span>
+        </div>
+    </footer>
 
-        let particlesArray = [];
+</div>
 
-        class Particle {
-            constructor(x, y, directionX, directionY, size) {
-                this.x = x;
-                this.y = y;
-                this.directionX = directionX;
-                this.directionY = directionY;
-                this.size = size;
-            }
-            
-            draw() {
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2, false);
-                // Subdued blue for less distraction
-                ctx.fillStyle = 'rgba(14, 165, 233, 0.2)';
-                ctx.fill();
-            }
-            
-            update() {
-                // Bounce off edges softly
-                if (this.x > canvas.width || this.x < 0) this.directionX = -this.directionX;
-                if (this.y > canvas.height || this.y < 0) this.directionY = -this.directionY;
-
-                // Move particle
-                this.x += this.directionX;
-                this.y += this.directionY;
-                this.draw();
-            }
-        }
-
-        function init() {
-            particlesArray = [];
-            let numberOfParticles = (canvas.height * canvas.width) / 12000; // Less dense
-            for (let i = 0; i < numberOfParticles; i++) {
-                let size = (Math.random() * 2) + 0.5;
-                let x = (Math.random() * ((innerWidth - size * 2) - (size * 2)) + size * 2);
-                let y = (Math.random() * ((innerHeight - size * 2) - (size * 2)) + size * 2);
-                // Slower movement
-                let directionX = (Math.random() * 0.5) - 0.25;
-                let directionY = (Math.random() * 0.5) - 0.25;
-                particlesArray.push(new Particle(x, y, directionX, directionY, size));
-            }
-        }
-
-        function connect() {
-            let opacityValue = 1;
-            for (let a = 0; a < particlesArray.length; a++) {
-                for (let b = a; b < particlesArray.length; b++) {
-                    let distance = ((particlesArray[a].x - particlesArray[b].x) * (particlesArray[a].x - particlesArray[b].x))
-                                 + ((particlesArray[a].y - particlesArray[b].y) * (particlesArray[a].y - particlesArray[b].y));
-                    if (distance < (canvas.width/8) * (canvas.height/8)) {
-                        opacityValue = 1 - (distance/20000);
-                        // Much fainter connection lines
-                        ctx.strokeStyle = 'rgba(14, 165, 233,' + (opacityValue * 0.15) + ')';
-                        ctx.lineWidth = 1;
-                        ctx.beginPath();
-                        ctx.moveTo(particlesArray[a].x, particlesArray[a].y);
-                        ctx.lineTo(particlesArray[b].x, particlesArray[b].y);
-                        ctx.stroke();
-                    }
-                }
-            }
-        }
-
-        function animate() {
-            requestAnimationFrame(animate);
-            ctx.clearRect(0,0,innerWidth, innerHeight);
-            for (let i = 0; i < particlesArray.length; i++) {
-                particlesArray[i].update();
-            }
-            connect();
-        }
-
-        window.addEventListener('resize', function() {
-            canvas.width = innerWidth;
-            canvas.height = innerHeight;
-            init();
-        });
-
-        init();
-        animate();
-    </script>
+<script>
+</script>
 </body>
 </html>
