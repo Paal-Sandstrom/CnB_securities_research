@@ -3,269 +3,283 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Equity Research Dashboard</title>
+    <title>CnB Equity Research</title>
     <style>
-        * { box-sizing: border-box; }
-        
-        @keyframes pulse {
-            0% { box-shadow: inset 0 0 0 rgba(14, 165, 233, 0); }
-            50% { box-shadow: inset 0 0 100px rgba(14, 165, 233, 0.05); }
-            100% { box-shadow: inset 0 0 0 rgba(14, 165, 233, 0); }
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&display=swap');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            color: #94a3b8;
-            background-color: #030712;
-            /* Sleek moving grid background */
-            background-image: 
-                linear-gradient(rgba(14, 165, 233, 0.07) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(14, 165, 233, 0.07) 1px, transparent 1px);
-            background-size: 40px 40px;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            animation: pulse 8s infinite;
-        }
-
-        /* Dashboard Layout */
-        .dashboard-container {
-            display: flex;
-            width: 100%;
-            max-width: 1200px;
-            margin: 40px 20px;
-            gap: 40px;
-        }
-
-        /* Left Sidebar */
-        .sidebar {
-            flex: 0 0 300px;
+            font-family: 'Space Grotesk', sans-serif;
+            background-color: #010409;
+            color: #e2e8f0;
+            height: 100vh;
+            overflow: hidden;
             display: flex;
             flex-direction: column;
-            position: sticky;
-            top: 40px;
-            height: fit-content;
-        }
-
-        .sys-status {
-            font-family: monospace;
-            color: #0ea5e9;
-            font-size: 0.85em;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            margin-bottom: 20px;
-            display: flex;
             align-items: center;
-            gap: 8px;
+            justify-content: space-between;
+            padding: 80px 20px;
         }
 
-        .sys-status::before {
-            content: '';
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            background-color: #0ea5e9;
-            border-radius: 50%;
-            box-shadow: 0 0 10px #0ea5e9;
+        /* --- AMBIENT CANVAS BACKGROUND --- */
+        #particleCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none; /* Ignores the mouse entirely */
+        }
+
+        /* --- Z-INDEX WRAPPER FOR CONTENT --- */
+        .ui-layer {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+            justify-content: space-between;
+        }
+
+        /* --- GLOWING TITLE --- */
+        .title-container {
+            text-align: center;
         }
 
         h1 {
-            color: #f8fafc;
-            font-size: 3em;
-            line-height: 1.1;
-            margin: 0 0 20px 0;
+            font-size: 4rem;
+            font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: -1px;
-        }
-
-        h1 span { color: #0ea5e9; }
-
-        .intro {
-            font-size: 1.05em;
-            line-height: 1.7;
-            margin-bottom: 30px;
-        }
-
-        /* Main Content Area */
-        .content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        h2 {
-            color: #f8fafc;
-            font-size: 1.2em;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            border-bottom: 1px solid rgba(14, 165, 233, 0.2);
-            padding-bottom: 10px;
-            margin: 0 0 10px 0;
-        }
-
-        /* Horizontal Report Cards */
-        .report-card {
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            background: linear-gradient(145deg, #0b1120, #030712);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-left: 4px solid #0ea5e9;
-            border-radius: 8px;
-            padding: 25px 30px;
-            text-decoration: none;
-            color: inherit;
-            transition: all 0.3s ease;
-            gap: 30px;
-        }
-
-        .report-card:hover {
-            border-left: 4px solid #38bdf8;
-            background: linear-gradient(145deg, #0f172a, #030712);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(14, 165, 233, 0.15);
-            transform: translateX(5px);
-        }
-
-        .card-meta {
-            flex: 0 0 120px;
-            border-right: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .ticker {
-            color: #38bdf8;
-            font-family: monospace;
-            font-size: 1.1em;
-            font-weight: bold;
+            letter-spacing: 6px;
+            color: #ffffff;
+            text-shadow: 
+                0 0 10px rgba(14, 165, 233, 0.5),
+                0 0 20px rgba(14, 165, 233, 0.3);
             margin-bottom: 5px;
         }
 
-        .date {
-            font-size: 0.8em;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: #64748b;
-        }
-
-        .card-body { flex: 1; }
-
-        .company-name {
-            color: #f8fafc;
-            font-size: 1.5em;
-            font-weight: bold;
-            margin: 0 0 8px 0;
-        }
-
-        .description { margin: 0; font-size: 0.95em; }
-
-        .card-action {
+        h1 span {
             color: #0ea5e9;
-            font-family: monospace;
-            font-size: 1.2em;
-            transition: transform 0.3s ease;
         }
 
-        .report-card:hover .card-action { transform: translateX(5px); color: #38bdf8; }
-
-        /* Locked/Coming Soon Card */
-        .locked-card {
-            border-left: 4px solid #334155;
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-        
-        .locked-card:hover {
-            transform: none;
-            box-shadow: none;
-            background: linear-gradient(145deg, #0b1120, #030712);
-            border-left: 4px solid #334155;
+        .subtitle {
+            font-size: 1.1rem;
+            color: #94a3b8;
+            letter-spacing: 4px;
+            text-transform: uppercase;
         }
 
-        .locked-card .ticker { color: #64748b; }
+        /* --- ABOUT US BOX --- */
+        .about-box {
+            background: rgba(14, 165, 233, 0.03);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(14, 165, 233, 0.15);
+            border-radius: 16px;
+            max-width: 650px;
+            padding: 35px 40px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            margin: 40px 0;
+        }
+
+        .about-box p {
+            font-size: 1.15rem;
+            line-height: 1.7;
+            color: #cbd5e1;
+            font-weight: 400;
+        }
+
+        .about-box span.highlight {
+            color: #38bdf8;
+            font-weight: 700;
+        }
+
+        /* --- GLASSMORPHISM NAV BUTTONS --- */
+        .nav-grid {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .glass-btn {
+            position: relative;
+            background: rgba(14, 165, 233, 0.04);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(14, 165, 233, 0.2);
+            border-radius: 12px;
+            padding: 18px 45px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-decoration: none;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+            min-width: 200px;
+            text-align: center;
+        }
+
+        .glass-btn::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 50%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(56, 189, 248, 0.3), transparent);
+            transform: skewX(-20deg);
+            transition: all 0.5s ease;
+        }
+
+        .glass-btn:hover {
+            transform: translateY(-5px);
+            background: rgba(14, 165, 233, 0.15);
+            border-color: #38bdf8;
+            color: #ffffff;
+            box-shadow: 
+                0 15px 25px rgba(0, 0, 0, 0.4),
+                0 0 15px rgba(14, 165, 233, 0.3);
+            text-shadow: 0 0 8px #38bdf8;
+        }
+
+        .glass-btn:hover::before {
+            left: 200%;
+        }
 
         /* MOBILE RESPONSIVE STYLES */
-        @media (max-width: 850px) {
-            .dashboard-container {
-                flex-direction: column;
-                margin: 20px 15px;
-                gap: 20px;
-            }
-
-            .sidebar {
-                position: relative;
-                top: 0;
-                flex: auto;
-                text-align: center;
-                border-bottom: 1px solid rgba(14, 165, 233, 0.2);
-                padding-bottom: 20px;
-            }
-
-            .sys-status { justify-content: center; }
-            h1 { font-size: 2.5em; }
-
-            .report-card {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 15px;
-                padding: 20px;
-            }
-
-            .card-meta {
-                border-right: none;
-                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-                padding-bottom: 10px;
-                width: 100%;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                flex: auto;
-            }
-
-            .card-action { display: none; /* Hide arrow on mobile to save space */ }
+        @media (max-width: 800px) {
+            h1 { font-size: 2.5rem; letter-spacing: 3px; }
+            .subtitle { font-size: 0.9rem; }
+            .about-box { padding: 25px; margin: 20px 0; }
+            .about-box p { font-size: 1rem; }
+            .nav-grid { flex-direction: column; gap: 15px; width: 100%; max-width: 350px; }
+            .glass-btn { width: 100%; padding: 18px; }
         }
     </style>
 </head>
 <body>
 
-<div class="dashboard-container">
-    
-    <header class="sidebar">
-        <div class="sys-status">System Online</div>
-        <h1>Equity<br><span>Research</span></h1>
-        <p class="intro">Welcome to my financial analysis terminal. This portal tracks deep-dive fundamental research, DCF valuations, and global market breakdowns.</p>
-    </header>
+    <canvas id="particleCanvas"></canvas>
 
-    <main class="content">
-        <h2>Active Coverage</h2>
+    <div class="ui-layer">
         
-        <a href="stocks/nichirei.html" class="report-card">
-            <div class="card-meta">
-                <div class="ticker">TSE: 2871</div>
-                <div class="date">Updated</div>
-            </div>
-            <div class="card-body">
-                <h3 class="company-name">Nichirei Corp</h3>
-                <p class="description">Analysis of Japan's leading cold-storage logistics and frozen food business. Featuring FCF modeling and demographic risk assessment.</p>
-            </div>
-            <div class="card-action">→</div>
-        </a>
-
-        <div class="report-card locked-card">
-            <div class="card-meta">
-                <div class="ticker">PENDING</div>
-                <div class="date">In Progress</div>
-            </div>
-            <div class="card-body">
-                <h3 class="company-name">Next Analysis</h3>
-                <p class="description">Currently compiling data and running valuation models for the next equity opportunity.</p>
-            </div>
-            <div class="card-action">🔒</div>
+        <div class="title-container">
+            <h1>CnB <span>Research</span></h1>
+            <div class="subtitle">Global Equity Intelligence</div>
         </div>
 
-    </main>
+        <div class="about-box">
+            <p>We are two <span class="highlight">Lund University</span> students with a profound interest in finance and global markets. This portal serves as an archive for our independent research, fundamental analysis, and valuation models across various financial equities.</p>
+        </div>
 
-</div>
+        <div class="nav-grid">
+            <a href="#" class="glass-btn">M & A</a>
+            <a href="stocks/nichirei.html" class="glass-btn">Stock Reports</a>
+            <a href="#" class="glass-btn">Bonds</a>
+        </div>
 
+    </div>
+
+    <script>
+        const canvas = document.getElementById('particleCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let particlesArray = [];
+
+        class Particle {
+            constructor(x, y, directionX, directionY, size) {
+                this.x = x;
+                this.y = y;
+                this.directionX = directionX;
+                this.directionY = directionY;
+                this.size = size;
+            }
+            
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2, false);
+                // Subdued blue for less distraction
+                ctx.fillStyle = 'rgba(14, 165, 233, 0.2)';
+                ctx.fill();
+            }
+            
+            update() {
+                // Bounce off edges softly
+                if (this.x > canvas.width || this.x < 0) this.directionX = -this.directionX;
+                if (this.y > canvas.height || this.y < 0) this.directionY = -this.directionY;
+
+                // Move particle
+                this.x += this.directionX;
+                this.y += this.directionY;
+                this.draw();
+            }
+        }
+
+        function init() {
+            particlesArray = [];
+            let numberOfParticles = (canvas.height * canvas.width) / 12000; // Less dense
+            for (let i = 0; i < numberOfParticles; i++) {
+                let size = (Math.random() * 2) + 0.5;
+                let x = (Math.random() * ((innerWidth - size * 2) - (size * 2)) + size * 2);
+                let y = (Math.random() * ((innerHeight - size * 2) - (size * 2)) + size * 2);
+                // Slower movement
+                let directionX = (Math.random() * 0.5) - 0.25;
+                let directionY = (Math.random() * 0.5) - 0.25;
+                particlesArray.push(new Particle(x, y, directionX, directionY, size));
+            }
+        }
+
+        function connect() {
+            let opacityValue = 1;
+            for (let a = 0; a < particlesArray.length; a++) {
+                for (let b = a; b < particlesArray.length; b++) {
+                    let distance = ((particlesArray[a].x - particlesArray[b].x) * (particlesArray[a].x - particlesArray[b].x))
+                                 + ((particlesArray[a].y - particlesArray[b].y) * (particlesArray[a].y - particlesArray[b].y));
+                    if (distance < (canvas.width/8) * (canvas.height/8)) {
+                        opacityValue = 1 - (distance/20000);
+                        // Much fainter connection lines
+                        ctx.strokeStyle = 'rgba(14, 165, 233,' + (opacityValue * 0.15) + ')';
+                        ctx.lineWidth = 1;
+                        ctx.beginPath();
+                        ctx.moveTo(particlesArray[a].x, particlesArray[a].y);
+                        ctx.lineTo(particlesArray[b].x, particlesArray[b].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            ctx.clearRect(0,0,innerWidth, innerHeight);
+            for (let i = 0; i < particlesArray.length; i++) {
+                particlesArray[i].update();
+            }
+            connect();
+        }
+
+        window.addEventListener('resize', function() {
+            canvas.width = innerWidth;
+            canvas.height = innerHeight;
+            init();
+        });
+
+        init();
+        animate();
+    </script>
 </body>
 </html>
