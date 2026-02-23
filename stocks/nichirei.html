@@ -1,255 +1,382 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nichirei Corp (2871.T) - Equity Research</title>
+    <title>Nichirei Corp (2871.T) — Silkroad Equity Analysis</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+
     <style>
-        * { box-sizing: border-box; }
+        :root {
+            --bg:        #09090b;
+            --gold:      #c8a96e;
+            --gold-dim:  #8a7148;
+            --gold-glow: rgba(200, 169, 110, 0.12);
+            --ivory:     #ede8df;
+            --muted:     #6b6459;
+            --border:    rgba(200, 169, 110, 0.14);
+            --border-b:  rgba(200, 169, 110, 0.3);
+            --red:       #c0392b;
+            --red-lo:    rgba(192, 57, 43, 0.08);
+            --surface:   rgba(255, 255, 255, 0.018);
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        html { scroll-behavior: smooth; }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: #cbd5e1;
-            background-color: #050505;
-            margin: 0;
-            padding: 40px 20px;
+            font-family: 'Jost', sans-serif;
+            background: var(--bg);
+            color: var(--ivory);
             min-height: 100vh;
+            padding: 0;
+        }
+
+        /* ── GRID TEXTURE ── */
+        body::before {
+            content: '';
+            position: fixed; inset: 0; z-index: 0;
+            background-image:
+                linear-gradient(rgba(200,169,110,0.022) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(200,169,110,0.022) 1px, transparent 1px);
+            background-size: 60px 60px;
+            pointer-events: none;
+        }
+        body::after {
+            content: '';
+            position: fixed; inset: 0; z-index: 0;
+            background: radial-gradient(ellipse 80% 60% at 50% 30%, transparent 30%, rgba(9,9,11,0.88) 100%);
+            pointer-events: none;
+        }
+
+        /* ══ PAGE WRAPPER ══ */
+        .page {
+            position: relative; z-index: 10;
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 0 32px 0;
             display: flex;
             flex-direction: column;
+        }
+
+        /* ── TOP NAV ── */
+        .topnav {
+            display: flex;
             align-items: center;
-        }
-
-        #dataNetwork { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.6; }
-
-        /* Navigation */
-        .btn-back {
-            padding: 10px 20px;
-            background: rgba(16, 185, 129, 0.1);
-            color: #10b981;
-            border: 1px solid #10b981;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: bold;
-            transition: 0.3s;
-            margin-bottom: 30px;
-            align-self: flex-start;
-            margin-left: max(0px, calc(50vw - 475px));
-        }
-        .btn-back:hover { background: #10b981; color: #050505; box-shadow: 0 0 15px rgba(16, 185, 129, 0.4); }
-
-        /* Main Report Block */
-        .report-block {
-            background: rgba(20, 25, 35, 0.85);
+            justify-content: space-between;
+            padding: 22px 0 18px;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            background: rgba(9,9,11,0.92);
             backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 16px; 
-            width: 100%;
-            max-width: 950px;
-            padding: 40px;
-            margin-bottom: 30px;
+            z-index: 100;
+        }
+        .back-link {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.68rem;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            text-decoration: none;
+            color: var(--muted);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: color 0.25s;
+        }
+        .back-link::before { content: '←'; font-size: 0.9rem; transition: transform 0.25s; }
+        .back-link:hover { color: var(--gold); }
+        .back-link:hover::before { transform: translateX(-4px); }
+        .breadcrumb {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.62rem;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--muted);
+        }
+        .breadcrumb span { color: var(--gold-dim); }
+
+        /* ── REPORT HERO ── */
+        .report-hero {
+            padding: 48px 0 32px;
+            border-bottom: 1px solid var(--border);
+        }
+        .ticker-label {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.65rem;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: var(--gold-dim);
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .ticker-label::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+        .report-hero h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 300;
+            font-size: clamp(2.4rem, 5vw, 4rem);
+            line-height: 1;
+            color: var(--ivory);
+            margin-bottom: 6px;
+        }
+        .report-hero h1 em {
+            font-style: italic;
+            color: var(--gold);
+        }
+        .report-tagline {
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            font-size: 1.05rem;
+            color: var(--muted);
+            margin-top: 10px;
         }
 
-        /* Typography */
-        h1, h2, h3 { color: #10b981; margin-top: 0; }
-        h1 { font-size: 2.2em; margin-bottom: 5px; }
-        h2 { font-size: 1.5em; margin-top: 40px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; color: #f8fafc; }
-        .sub-header { color: #94a3b8; font-family: monospace; margin-bottom: 30px; font-size: 1.1em; }
-        p { font-size: 1.05em; color: #cbd5e1; margin-bottom: 20px; }
-
-        /* Key Metrics Banner */
+        /* ── METRICS BANNER ── */
         .metrics-banner {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 15px;
-            margin-bottom: 40px;
+            gap: 1px;
+            background: var(--border);
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 32px 0;
         }
         .metric-card {
-            background: rgba(0,0,0,0.4);
-            border: 1px solid rgba(255,255,255,0.05);
-            border-radius: 8px;
-            padding: 15px;
-            text-align: center;
+            background: var(--bg);
+            padding: 20px 18px;
+            text-align: left;
         }
-        .metric-title { font-size: 0.75em; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; }
-        .metric-value { font-size: 1.5em; font-weight: bold; color: #f8fafc; margin-top: 5px; }
-        .metric-value.pos { color: #10b981; }
-
-        /* Layout Grids */
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 20px; align-items: center; }
-
-        /* Highlight Box */
-        .thesis-box {
-            background: rgba(16, 185, 129, 0.05);
-            border-left: 4px solid #10b981;
-            padding: 20px;
-            margin: 20px 0;
-            border-radius: 0 8px 8px 0;
+        .metric-title {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.58rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 8px;
         }
-        .risk-box {
-            background: rgba(244, 63, 94, 0.05);
-            border-left: 4px solid #f43f5e;
-            padding: 20px;
-            margin: 20px 0;
-            border-radius: 0 8px 8px 0;
+        .metric-value {
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 400;
+            font-size: 1.7rem;
+            color: var(--ivory);
+            line-height: 1;
         }
+        .metric-value.pos { color: var(--gold); }
 
-        /* Chart Containers */
-        .chart-box {
-            background: rgba(0,0,0,0.3); 
-            border-radius: 8px; 
-            padding: 20px;
-            border: 1px solid rgba(255,255,255,0.05);
+        /* ── SECTION HEADINGS ── */
+        .section {
+            padding: 40px 0 0;
+        }
+        .section-label {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.6rem;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: var(--gold-dim);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+        .section h2 {
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 400;
+            font-size: 1.8rem;
+            color: var(--ivory);
             margin-bottom: 20px;
-            width: 100%;
+            line-height: 1.1;
         }
-        .chart-tall { height: 350px; }
-        .chart-short { height: 250px; }
+        .section h2 em { font-style: italic; color: var(--gold); }
+        .section p {
+            font-size: 0.92rem;
+            font-weight: 300;
+            line-height: 1.8;
+            color: #a89e94;
+            margin-bottom: 20px;
+            letter-spacing: 0.02em;
+        }
+        .section strong { color: var(--ivory); font-weight: 500; }
 
-        /* MOBILE RESPONSIVE STYLES */
-        @media (max-width: 768px) {
-            body {
-                padding: 20px 15px;
-            }
+        /* ── GRID LAYOUTS ── */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+            align-items: start;
+        }
+        .grid-text {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .grid-text p { margin-bottom: 12px; }
 
-            .btn-back {
-                margin-left: 0;
-                padding: 8px 16px;
-                font-size: 0.9em;
-                margin-bottom: 20px;
-            }
+        /* ── CHART BOXES ── */
+        .chart-box {
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            padding: 20px;
+            background: var(--surface);
+            margin-bottom: 20px;
+            position: relative;
+        }
+        .chart-box::before {
+            content: '';
+            position: absolute; top: 0; left: 0;
+            width: 40%; height: 1px;
+            background: linear-gradient(90deg, var(--gold-dim), transparent);
+        }
+        .chart-label {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.58rem;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 14px;
+        }
+        .chart-tall { height: 320px; }
+        .chart-short { height: 230px; }
 
-            .report-block {
-                padding: 25px 20px;
-                border-radius: 12px;
-            }
+        /* ── CALLOUT BOXES ── */
+        .thesis-box {
+            border: 1px solid rgba(200, 169, 110, 0.25);
+            border-left: 3px solid var(--gold);
+            background: var(--gold-glow);
+            border-radius: 0 3px 3px 0;
+            padding: 22px 24px;
+            margin: 24px 0;
+        }
+        .thesis-box p { margin: 0; color: #b8aa98; }
 
-            h1 {
-                font-size: 1.6em;
-                margin-bottom: 8px;
-            }
+        .risk-box {
+            border: 1px solid rgba(192, 57, 43, 0.25);
+            border-left: 3px solid var(--red);
+            background: var(--red-lo);
+            border-radius: 0 3px 3px 0;
+            padding: 22px 24px;
+            margin: 24px 0;
+        }
+        .risk-box p { margin-bottom: 14px; color: #b8aa98; }
+        .risk-box ol { padding-left: 18px; }
+        .risk-box li {
+            font-size: 0.9rem;
+            font-weight: 300;
+            color: #a89e94;
+            line-height: 1.75;
+            margin-bottom: 12px;
+            letter-spacing: 0.02em;
+        }
+        .risk-box strong { color: var(--ivory); font-weight: 500; }
 
-            h2 {
-                font-size: 1.3em;
-                margin-top: 30px;
-            }
-
-            .sub-header {
-                font-size: 0.95em;
-                margin-bottom: 20px;
-            }
-
-            p {
-                font-size: 0.95em;
-                margin-bottom: 15px;
-            }
-
-            /* Stack metrics into 2x2 grid on mobile */
-            .metrics-banner {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 10px;
-                margin-bottom: 30px;
-            }
-
-            .metric-card {
-                padding: 12px;
-            }
-
-            .metric-title {
-                font-size: 0.65em;
-            }
-
-            .metric-value {
-                font-size: 1.2em;
-            }
-
-            /* Stack grid-2 layouts vertically */
-            .grid-2 {
-                grid-template-columns: 1fr;
-                gap: 20px;
-            }
-
-            .thesis-box, .risk-box {
-                padding: 15px;
-                margin: 15px 0;
-            }
-
-            .chart-box {
-                padding: 15px;
-            }
-
-            .chart-tall {
-                height: 280px;
-            }
-
-            .chart-short {
-                height: 220px;
-            }
-
-            /* Make ordered list more compact */
-            .risk-box ol {
-                padding-left: 20px;
-            }
-
-            .risk-box li {
-                margin-bottom: 12px;
-            }
+        /* ── VERDICT BLOCK ── */
+        .verdict {
+            border: 1px solid var(--border-b);
+            border-radius: 3px;
+            padding: 28px 30px;
+            background: var(--surface);
+            margin: 32px 0 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 24px;
+        }
+        .verdict-badge {
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            font-size: 0.75rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--gold-dim);
+            border: 1px solid var(--gold-dim);
+            border-radius: 2px;
+            padding: 4px 10px;
+            white-space: nowrap;
+            margin-top: 4px;
+        }
+        .verdict-text {
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            font-size: 1.15rem;
+            color: #b8aa98;
+            line-height: 1.65;
         }
 
-        @media (max-width: 480px) {
-            body {
-                padding: 15px 10px;
-            }
+        /* ── BOTTOM BAR ── */
+        .bottombar {
+            border-top: 1px solid var(--border);
+            padding: 16px 0;
+            margin-top: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+        .contact-info {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.68rem;
+            letter-spacing: 0.1em;
+            color: var(--muted);
+            display: flex;
+            gap: 36px;
+        }
+        .contact-label {
+            color: var(--gold-dim);
+            text-transform: uppercase;
+            font-size: 0.6rem;
+            letter-spacing: 0.18em;
+            margin-right: 8px;
+        }
 
-            .report-block {
-                padding: 20px 15px;
-            }
+        /* ── ENTRANCE ANIMATIONS ── */
+        .report-hero  { animation: fadeUp 0.6s 0.05s ease both; }
+        .metrics-banner { animation: fadeUp 0.6s 0.15s ease both; }
+        .section      { animation: fadeUp 0.6s 0.2s ease both; }
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(12px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
 
-            h1 {
-                font-size: 1.4em;
-            }
-
-            h2 {
-                font-size: 1.2em;
-            }
-
-            .sub-header {
-                font-size: 0.85em;
-            }
-
-            p {
-                font-size: 0.9em;
-            }
-
-            .metric-title {
-                font-size: 0.6em;
-            }
-
-            .metric-value {
-                font-size: 1.1em;
-            }
-
-            .chart-tall {
-                height: 250px;
-            }
-
-            .chart-short {
-                height: 200px;
-            }
+        /* ── RESPONSIVE ── */
+        @media (max-width: 720px) {
+            .page { padding: 0 18px; }
+            .metrics-banner { grid-template-columns: 1fr 1fr; }
+            .grid-2 { grid-template-columns: 1fr; }
+            .chart-tall { height: 260px; }
+            .chart-short { height: 200px; }
+            .contact-info { flex-direction: column; gap: 8px; }
+            .verdict { flex-direction: column; gap: 14px; }
         }
     </style>
 </head>
 <body>
+<div class="page">
 
-<canvas id="dataNetwork"></canvas>
+    <!-- TOP NAV -->
+    <nav class="topnav">
+        <a href="index.html" class="back-link">Stock Reports</a>
+        <div class="breadcrumb">Silkroad <span>/</span> East Asia <span>/</span> 2871.T</div>
+    </nav>
 
-<a href="../index.html" class="btn-back">← Back to Equity Research</a>
+    <!-- HERO -->
+    <div class="report-hero">
+        <div class="ticker-label">TSE: 2871 &nbsp;·&nbsp; NIKKEI 225 &nbsp;·&nbsp; Japan</div>
+        <h1>Nichirei<br><em>Corporation</em></h1>
+        <p class="report-tagline">Japan's cold-chain champion — a study in quiet compounding.</p>
+    </div>
 
-<div class="report-block">
-    <h1>Nichirei Corp (ニチレイ)</h1>
-    <div class="sub-header">TSE: 2871 | NIKKEI 225</div>
-
+    <!-- METRICS BANNER -->
     <div class="metrics-banner">
         <div class="metric-card">
             <div class="metric-title">Market Cap</div>
@@ -269,246 +396,300 @@
         </div>
     </div>
 
-    <h2>The Business</h2>
-    <p>Nichirei is a Japanese frozen food business headquartered in Tokyo. Revenue is derived from several segments, predominantly Processed Food and Logistics.</p>
-    
-    <div class="grid-2">
-        <div class="chart-box chart-short" style="display: flex; justify-content: center;">
-            <canvas id="segmentChart"></canvas>
+    <!-- THE BUSINESS -->
+    <div class="section">
+        <div class="section-label">01 &nbsp; Overview</div>
+        <h2>The <em>Business</em></h2>
+        <div class="grid-2">
+            <div>
+                <div class="chart-box chart-short">
+                    <div class="chart-label">Revenue by Segment</div>
+                    <canvas id="segmentChart"></canvas>
+                </div>
+            </div>
+            <div class="grid-text">
+                <p>Nichirei is a Japanese frozen food business headquartered in Tokyo. Revenue is derived from several segments, predominantly Processed Food and Logistics.</p>
+                <p>Their highest-margin segment is actually logistics — centred around cold storage — with a 6.15% operating margin, slightly above their core food divisions. They lease this infrastructure to external clients as well as using it internally.</p>
+            </div>
         </div>
-        <div>
-            <p>As is visible in the breakdown, their highest margin segment is logistics division with a 6.15% operating margin compared to their core food segments. While they call it logistics, it's really centered around cold storage—both for their own frozen food products and for other businesses as they lend out the storage space.</p>
+        <p>Management is acutely aware of Japan's demographic headwinds and is expanding their cold-storage footprint into Europe (Poland, UK) and North America. They are also known to send free product samples to institutional investors depending on the size of their stake — a charming detail that speaks to genuine pride in their product.</p>
+    </div>
+
+    <!-- REVENUE GROWTH -->
+    <div class="section">
+        <div class="section-label">02 &nbsp; Revenue</div>
+        <h2>Revenue <em>Growth</em></h2>
+        <p>The company is extremely stable. Over the last several years, total average revenue growth comes out to a steady <strong>3.11% per annum</strong> — slow, but consistent and predictable.</p>
+        <div class="chart-box chart-tall">
+            <div class="chart-label">TTM Revenue · Millions of Yen</div>
+            <canvas id="revenueChart"></canvas>
         </div>
     </div>
-    <p>They are actively expanding their cold storage footprint in Europe (currently in Poland and the UK) as well as North America. Management is well aware of the declining Japanese population and is expanding overseas specifically to mitigate that demographic risk. They are also incredibly proud of their frozen food—even going as far as giving out free samples to investors across the world depending on the size of their stake!</p>
 
-    <h2>Revenue Growth</h2>
-    <p>The company is extremely stable. Over the last several years, total average revenue growth comes out to a steady 3.11%.</p>
-    <div class="chart-box chart-tall">
-        <canvas id="revenueChart"></canvas>
-    </div>
-
-    <h2>Cash Generation & Capital Allocation</h2>
-    <p>While top-line revenue growth is relatively slow, Nichirei's Cash from Operations has consistently grown over the last 10 years, averaging a 9.82% growth rate annually. Most of this comes from improving operating margins and operational efficiency.</p>
-    <div class="chart-box chart-tall">
-        <canvas id="cfoChart"></canvas>
-    </div>
-
-    <p>They are incredibly shareholder-friendly. They spend their cash from operations on a dividend which has grown at a massive 13.83% average clip each year.</p>
-    <div class="grid-2">
-        <div class="chart-box chart-short"><canvas id="dividendChart"></canvas></div>
-        <div class="chart-box chart-short"><canvas id="buybackChart"></canvas></div>
-    </div>
-    
-    <p>Management is also highly confident in the business, routinely issuing aggressive stock buybacks whenever the stock price declines from underwhelming operations to establish a price floor. However, the business is most exciting in terms of Capital Expenditures (CapEx). As the chart below shows, their CapEx consistently exceeds what they spend on buybacks and dividends combined each year. This proves management cares more about compounding the underlying value of the company than just appeasing investors in the short term.</p>
-    <div class="chart-box chart-tall">
-        <canvas id="capexChart"></canvas>
-    </div>
-
-    <h2>The Fortress Balance Sheet</h2>
-    <p>Nichirei, like many elite Japanese firms, boasts a true "fortress" balance sheet. Their current assets far exceed their current liabilities, and are almost enough to completely cover their total liabilities (including long-term debt) entirely.</p>
-    <div class="chart-box chart-tall">
-        <canvas id="balanceChart"></canvas>
+    <!-- CASH GENERATION -->
+    <div class="section">
+        <div class="section-label">03 &nbsp; Cash Flow</div>
+        <h2>Cash Generation & <em>Capital Allocation</em></h2>
+        <p>While top-line growth is modest, Cash from Operations has compounded at an impressive <strong>9.82% annually</strong> over the past decade — driven by expanding margins and operational efficiency rather than pure volume.</p>
+        <div class="chart-box chart-tall">
+            <div class="chart-label">Cash from Operations · Millions of Yen</div>
+            <canvas id="cfoChart"></canvas>
+        </div>
+        <p>Nichirei is an exemplary steward of shareholder capital. Their dividend has grown at a <strong>13.83% average annual clip</strong> — a rate that commands serious attention.</p>
+        <div class="grid-2">
+            <div class="chart-box chart-short">
+                <div class="chart-label">Dividends Paid · Millions of Yen</div>
+                <canvas id="dividendChart"></canvas>
+            </div>
+            <div class="chart-box chart-short">
+                <div class="chart-label">Share Buybacks · Millions of Yen</div>
+                <canvas id="buybackChart"></canvas>
+            </div>
+        </div>
+        <p>Management also deploys aggressive buybacks during periods of price weakness, establishing a reliable floor. Most telling, however, is that CapEx consistently exceeds total shareholder returns — a rare signal that management is prioritising the compounding of intrinsic value over short-term optics.</p>
+        <div class="chart-box chart-tall">
+            <div class="chart-label">CapEx vs. Total Shareholder Return · Millions of Yen</div>
+            <canvas id="capexChart"></canvas>
+        </div>
     </div>
 
-    <h2>Valuation (DCF Model)</h2>
-    <div class="thesis-box">
-        <p>A 9% long-term growth rate is more than fair here, given their cash from operations has been growing at nearly 10% annually. However, to build a completely accurate DCF, we must use <strong>Free Cash Flow (FCF)</strong> instead of Cash from Operations. Using Operating Cash Flow is dangerous because it ignores the massive CapEx investments Nichirei makes every year into their cold-storage facilities.</p>
+    <!-- BALANCE SHEET -->
+    <div class="section">
+        <div class="section-label">04 &nbsp; Balance Sheet</div>
+        <h2>The Fortress <em>Balance Sheet</em></h2>
+        <p>Like many elite Japanese firms, Nichirei maintains a true fortress balance sheet. Current assets far exceed current liabilities and nearly cover all long-term obligations in full.</p>
+        <div class="chart-box chart-tall">
+            <div class="chart-label">Balance Sheet Snapshot · Millions of Yen</div>
+            <canvas id="balanceChart"></canvas>
+        </div>
     </div>
-    <p>Starting with a 2025 FCF of ¥29,364M, applying a 9% growth rate for 10 years, a standard 10% discount rate, and a 12.5x terminal multiple, we calculate an Enterprise Value of ¥614.3 Billion. Once we subtract net debt, the implied equity value suggests a fair share price of roughly <strong>¥1,654</strong>.</p>
-    <p>While a simple Price-to-OCF multiple makes the business look heavily underestimated, a proper FCF model reveals that the market is actually pricing Nichirei's future growth incredibly rationally right now.</p>
 
-    <h2>Key Risks</h2>
-    <div class="risk-box">
-        <p>There are two main risks for Nichirei, both of which management seems to understand and take quite seriously:</p>
-        <ol>
-            <li style="margin-bottom: 10px;"><strong>The Declining Japanese Population:</strong> A shrinking domestic consumer base is a massive headwind for a food company. They are actively mitigating this risk by expanding their cold-storage operations overseas into Europe and North America.</li>
-            <li><strong>Food Safety:</strong> A food safety disaster can bring down any business almost overnight (consider the historical impacts on companies like Chipotle). However, management is spending a significant amount of capital and focus on maintaining world-class safety standards to mitigate these risks each year.</li>
-        </ol>
+    <!-- VALUATION -->
+    <div class="section">
+        <div class="section-label">05 &nbsp; Valuation</div>
+        <h2>DCF <em>Valuation</em></h2>
+        <div class="thesis-box">
+            <p>A 9% long-term growth rate is conservative relative to Nichirei's ~10% CFO trajectory. However, we must anchor to <strong>Free Cash Flow</strong> rather than Operating Cash Flow — the latter dangerously ignores the significant CapEx Nichirei deploys into cold-storage infrastructure each year.</p>
+        </div>
+        <p>Starting from a 2025 FCF of ¥29,364M, applying a 9% growth rate over 10 years, a 10% discount rate, and a 12.5x terminal multiple, we arrive at an Enterprise Value of ¥614.3B. After subtracting net debt, the implied fair share price is approximately <strong>¥1,654</strong>.</p>
+        <p>While a simple Price-to-OCF lens makes Nichirei appear deeply undervalued, a rigorous FCF model reveals the market is in fact pricing the business with remarkable rationality.</p>
+        <div class="verdict">
+            <div class="verdict-badge">Fair Value</div>
+            <div class="verdict-text">At ¥1,722 vs. a DCF-derived intrinsic value of ¥1,654, Nichirei trades at a modest premium to fair value. The business is high-quality, but patient investors should await a more attractive entry point before establishing a position.</div>
+        </div>
     </div>
+
+    <!-- KEY RISKS -->
+    <div class="section">
+        <div class="section-label">06 &nbsp; Risk Factors</div>
+        <h2>Key <em>Risks</em></h2>
+        <div class="risk-box">
+            <p>Two structural risks warrant attention — both of which management appears to understand and is actively working to mitigate:</p>
+            <ol>
+                <li><strong>Declining Japanese Population.</strong> A shrinking domestic consumer base is a meaningful headwind for any food company. Nichirei is countering this directly through international cold-storage expansion across Europe and North America.</li>
+                <li><strong>Food Safety.</strong> A single food safety incident can devastate brand equity almost overnight — as the histories of Chipotle and others demonstrate. Management is deploying significant capital toward world-class safety standards and audit infrastructure.</li>
+            </ol>
+        </div>
+    </div>
+
+    <!-- BOTTOM BAR -->
+    <footer class="bottombar">
+        <div class="contact-info">
+            <span><span class="contact-label">Address</span> Magistratsvägen 55B, 222 33, Lund, Sweden</span>
+            <span><span class="contact-label">Phone</span> +46 72 233 26 22</span>
+        </div>
+    </footer>
 
 </div>
 
 <script>
-    window.onload = function() {
-        Chart.defaults.color = '#94a3b8';
-        Chart.defaults.borderColor = 'rgba(255,255,255,0.05)';
+window.onload = function() {
+    // Chart global defaults — adapted for dark/gold theme
+    Chart.defaults.color = '#6b6459';
+    Chart.defaults.borderColor = 'rgba(200, 169, 110, 0.08)';
+    Chart.defaults.font.family = "'DM Mono', monospace";
+    Chart.defaults.font.size = 10;
 
-        // 1. Segment Pie Chart
-        const ctxSeg = document.getElementById('segmentChart').getContext('2d');
-        new Chart(ctxSeg, {
-            type: 'doughnut',
-            data: {
-                labels: ['Processed Food', 'Logistics', 'Livestock', 'Fisheries', 'Real Estate'],
-                datasets: [{
-                    data: [41.38, 36.61, 11.64, 8.76, 0.64],
-                    backgroundColor: ['#10b981', '#38bdf8', '#8b5cf6', '#f43f5e', '#eab308'],
-                    borderWidth: 0
-                }]
-            },
-            options: { 
-                maintainAspectRatio: false,
-                plugins: { 
-                    legend: { position: 'right' },
-                    tooltip: {
-                        callbacks: {
-                            afterLabel: function(context) {
-                                const margins = {'Processed Food': '5.99%', 'Logistics': '6.15%', 'Livestock': '1.27%', 'Fisheries': '1.56%', 'Real Estate': '37.16%'};
-                                return 'EBIT Margin: ' + margins[context.label];
-                            }
+    const goldPalette = ['#c8a96e', '#8a7148', '#e8d4a8', '#5c4a2a', '#f0e0c0'];
+    const gridOpts = {
+        color: 'rgba(200,169,110,0.07)',
+        drawBorder: false,
+    };
+    const tickOpts = { color: '#6b6459' };
+
+    // 1. Segment Doughnut
+    new Chart(document.getElementById('segmentChart'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Processed Food', 'Logistics', 'Livestock', 'Fisheries', 'Real Estate'],
+            datasets: [{
+                data: [41.38, 36.61, 11.64, 8.76, 0.64],
+                backgroundColor: ['#c8a96e','#8a7148','#e8d4a8','#5c4a2a','#b07d3a'],
+                borderWidth: 0,
+                hoverOffset: 8
+            }]
+        },
+        options: {
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'right', labels: { color: '#6b6459', boxWidth: 10, padding: 12 } },
+                tooltip: {
+                    callbacks: {
+                        afterLabel: ctx => {
+                            const m = {'Processed Food':'5.99%','Logistics':'6.15%','Livestock':'1.27%','Fisheries':'1.56%','Real Estate':'37.16%'};
+                            return 'EBIT Margin: ' + m[ctx.label];
                         }
                     }
-                } 
-            }
-        });
-
-        // 2. Revenue Chart
-        const ctxRev = document.getElementById('revenueChart').getContext('2d');
-        new Chart(ctxRev, {
-            type: 'line',
-            data: {
-                labels: ['2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023', '2024', '2025'],
-                datasets: [{
-                    label: 'TTM Revenue (Mil Yen)',
-                    data: [539657, 540097, 560087, 580141, 580109, 572757, 602696, 662204, 680091, 702080],
-                    borderColor: '#38bdf8', backgroundColor: 'rgba(56, 189, 248, 0.1)',
-                    borderWidth: 3, fill: true, tension: 0.4,
-                    pointBackgroundColor: '#050505', pointBorderColor: '#38bdf8'
-                }]
-            },
-            options: { responsive: true, maintainAspectRatio: false }
-        });
-
-        // 3. CFO Chart
-        const ctxCfo = document.getElementById('cfoChart').getContext('2d');
-        new Chart(ctxCfo, {
-            type: 'bar',
-            data: {
-                labels: ['2015', '2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023', '2024', '2025'],
-                datasets: [{
-                    label: 'Cash from Operations (Mil Yen)',
-                    data: [27803, 37032, 40828, 29859, 31311, 39441, 45453, 34660, 37865, 62442, 53194],
-                    backgroundColor: '#10b981', borderRadius: 4
-                }]
-            },
-            options: { responsive: true, maintainAspectRatio: false }
-        });
-
-        // 4. Dividend Chart
-        const ctxDiv = document.getElementById('dividendChart').getContext('2d');
-        new Chart(ctxDiv, {
-            type: 'line',
-            data: {
-                labels: ['2015', '2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023', '2024', '2025'],
-                datasets: [{
-                    label: 'Dividends Paid',
-                    data: [2853, 3138, 3353, 4192, 4125, 4923, 5722, 7053, 6595, 8034, 9949],
-                    borderColor: '#f43f5e', borderWidth: 3, tension: 0.3, pointBackgroundColor: '#f43f5e'
-                }]
-            },
-            options: { responsive: true, maintainAspectRatio: false }
-        });
-
-        // 5. Buybacks Chart
-        const ctxBuy = document.getElementById('buybackChart').getContext('2d');
-        new Chart(ctxBuy, {
-            type: 'bar',
-            data: {
-                labels: ['2015', '2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023', '2024', '2025'],
-                datasets: [{
-                    label: 'Share Buybacks',
-                    data: [21, 1049, 9093, 14016, 10, 18, 7, 10012, 5009, 10, 10010],
-                    backgroundColor: '#8b5cf6', borderRadius: 4
-                }]
-            },
-            options: { responsive: true, maintainAspectRatio: false }
-        });
-
-        // 6. Capex vs Shareholder Return Chart
-        const ctxCap = document.getElementById('capexChart').getContext('2d');
-        new Chart(ctxCap, {
-            type: 'bar',
-            data: {
-                labels: ['2015', '2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023', '2024', '2025'],
-                datasets: [
-                    {
-                        label: 'Capital Expenditures',
-                        data: [20588, 12530, 8963, 15993, 20062, 20369, 28529, 21289, 23830, 26726, 28328],
-                        backgroundColor: '#eab308', borderRadius: 4
-                    },
-                    {
-                        label: 'Total Shareholder Return (Div + Buyback)',
-                        data: [2874, 4187, 12446, 18208, 4135, 4941, 5729, 17065, 11604, 8044, 19959],
-                        backgroundColor: '#38bdf8', borderRadius: 4
-                    }
-                ]
-            },
-            options: { responsive: true, maintainAspectRatio: false }
-        });
-
-        // 7. Balance Sheet Chart
-        const ctxBal = document.getElementById('balanceChart').getContext('2d');
-        new Chart(ctxBal, {
-            type: 'bar',
-            data: {
-                labels: ['Current Assets', 'Current Liabilities', 'Total Liabilities'],
-                datasets: [{
-                    label: 'Millions of Yen',
-                    data: [204925, 129000, 239098],
-                    backgroundColor: ['#10b981', '#f43f5e', '#8b5cf6'], borderRadius: 4
-                }]
-            },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
-        });
-    }
-
-    // --- Flying Green Background Script ---
-    const canvas = document.getElementById("dataNetwork");
-    const ctx = canvas.getContext("2d");
-    canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-    let particlesArray = [];
-    class Particle {
-        constructor() {
-            this.x = Math.random() * canvas.width;
-            this.y = Math.random() * canvas.height;
-            this.size = Math.random() * 2 + 1;
-            this.speedX = Math.random() * 0.8 - 0.4;
-            this.speedY = Math.random() * 0.8 - 0.4;
-        }
-        update() {
-            this.x += this.speedX; this.y += this.speedY;
-            if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
-            if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
-        }
-        draw() {
-            ctx.fillStyle = 'rgba(16, 185, 129, 0.9)'; 
-            ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill();
-        }
-    }
-    function init() { particlesArray = []; for (let i = 0; i < 80; i++) particlesArray.push(new Particle()); }
-    function animate() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        for (let i = 0; i < particlesArray.length; i++) {
-            particlesArray[i].update(); particlesArray[i].draw();
-            for (let j = i; j < particlesArray.length; j++) {
-                const dx = particlesArray[i].x - particlesArray[j].x;
-                const dy = particlesArray[i].y - particlesArray[j].y;
-                const distance = Math.sqrt(dx * dx + dy * dy);
-                if (distance < 140) {
-                    ctx.beginPath();
-                    ctx.strokeStyle = `rgba(56, 189, 248, ${0.8 - distance/140})`;
-                    ctx.lineWidth = 1.2;
-                    ctx.moveTo(particlesArray[i].x, particlesArray[i].y);
-                    ctx.lineTo(particlesArray[j].x, particlesArray[j].y);
-                    ctx.stroke();
                 }
             }
         }
-        requestAnimationFrame(animate);
-    }
-    window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; init(); });
-    init(); animate();
-</script>
+    });
 
+    // 2. Revenue Line
+    new Chart(document.getElementById('revenueChart'), {
+        type: 'line',
+        data: {
+            labels: ['2016','2017','2018','2019','2020','2021','2022','2023','2024','2025'],
+            datasets: [{
+                label: 'Revenue',
+                data: [539657,540097,560087,580141,580109,572757,602696,662204,680091,702080],
+                borderColor: '#c8a96e',
+                backgroundColor: 'rgba(200,169,110,0.07)',
+                borderWidth: 2, fill: true, tension: 0.4,
+                pointBackgroundColor: '#09090b', pointBorderColor: '#c8a96e', pointRadius: 4
+            }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                x: { grid: gridOpts, ticks: tickOpts },
+                y: { grid: gridOpts, ticks: tickOpts }
+            }
+        }
+    });
+
+    // 3. CFO Bar
+    new Chart(document.getElementById('cfoChart'), {
+        type: 'bar',
+        data: {
+            labels: ['2015','2016','2017','2018','2019','2020','2021','2022','2023','2024','2025'],
+            datasets: [{
+                label: 'Cash from Operations',
+                data: [27803,37032,40828,29859,31311,39441,45453,34660,37865,62442,53194],
+                backgroundColor: 'rgba(200,169,110,0.55)',
+                borderColor: '#c8a96e',
+                borderWidth: 1,
+                borderRadius: 2
+            }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                x: { grid: gridOpts, ticks: tickOpts },
+                y: { grid: gridOpts, ticks: tickOpts }
+            }
+        }
+    });
+
+    // 4. Dividend Line
+    new Chart(document.getElementById('dividendChart'), {
+        type: 'line',
+        data: {
+            labels: ['2015','2016','2017','2018','2019','2020','2021','2022','2023','2024','2025'],
+            datasets: [{
+                label: 'Dividends Paid',
+                data: [2853,3138,3353,4192,4125,4923,5722,7053,6595,8034,9949],
+                borderColor: '#c8a96e', borderWidth: 2, tension: 0.35, fill: false,
+                pointBackgroundColor: '#c8a96e', pointRadius: 3
+            }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                x: { grid: gridOpts, ticks: tickOpts },
+                y: { grid: gridOpts, ticks: tickOpts }
+            }
+        }
+    });
+
+    // 5. Buybacks Bar
+    new Chart(document.getElementById('buybackChart'), {
+        type: 'bar',
+        data: {
+            labels: ['2015','2016','2017','2018','2019','2020','2021','2022','2023','2024','2025'],
+            datasets: [{
+                label: 'Share Buybacks',
+                data: [21,1049,9093,14016,10,18,7,10012,5009,10,10010],
+                backgroundColor: 'rgba(138,113,72,0.55)',
+                borderColor: '#8a7148', borderWidth: 1, borderRadius: 2
+            }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                x: { grid: gridOpts, ticks: tickOpts },
+                y: { grid: gridOpts, ticks: tickOpts }
+            }
+        }
+    });
+
+    // 6. CapEx vs Shareholder Return
+    new Chart(document.getElementById('capexChart'), {
+        type: 'bar',
+        data: {
+            labels: ['2015','2016','2017','2018','2019','2020','2021','2022','2023','2024','2025'],
+            datasets: [
+                {
+                    label: 'Capital Expenditures',
+                    data: [20588,12530,8963,15993,20062,20369,28529,21289,23830,26726,28328],
+                    backgroundColor: 'rgba(200,169,110,0.6)',
+                    borderColor: '#c8a96e', borderWidth: 1, borderRadius: 2
+                },
+                {
+                    label: 'Total Shareholder Return',
+                    data: [2874,4187,12446,18208,4135,4941,5729,17065,11604,8044,19959],
+                    backgroundColor: 'rgba(138,113,72,0.4)',
+                    borderColor: '#8a7148', borderWidth: 1, borderRadius: 2
+                }
+            ]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { labels: { color: '#6b6459', boxWidth: 10 } } },
+            scales: {
+                x: { grid: gridOpts, ticks: tickOpts },
+                y: { grid: gridOpts, ticks: tickOpts }
+            }
+        }
+    });
+
+    // 7. Balance Sheet
+    new Chart(document.getElementById('balanceChart'), {
+        type: 'bar',
+        data: {
+            labels: ['Current Assets', 'Current Liabilities', 'Total Liabilities'],
+            datasets: [{
+                label: 'Millions of Yen',
+                data: [204925, 129000, 239098],
+                backgroundColor: ['rgba(200,169,110,0.65)', 'rgba(192,57,43,0.55)', 'rgba(138,113,72,0.5)'],
+                borderColor: ['#c8a96e','#c0392b','#8a7148'],
+                borderWidth: 1, borderRadius: 3
+            }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                x: { grid: gridOpts, ticks: tickOpts },
+                y: { grid: gridOpts, ticks: tickOpts }
+            }
+        }
+    });
+};
+</script>
 </body>
 </html>
